@@ -22,7 +22,6 @@ Options:
   -d, --directory            Defines the install directory of a github action runner. Default value is ${HOME}/runners.
   -n, --name                 Defines name of a runner.
   -g, --group                Defines group of a runner.
-  -g, --project              Defines project of a runner.
   -w, --working-directory    Defines working directory of a runner.
   -r, --repository           Defines url of a repository.
   -t, --token                Defines registration token for repository.
@@ -30,14 +29,14 @@ Options:
   -h, --help                 Shows this message.
   
 Examples:
-  $(dirname $0)/install.sh --name NAME --group GROUP --project PROJECT --repository REPO --token TOKEN
+  $(dirname $0)/install.sh --name NAME --group GROUP --repository REPO --token TOKEN
   $(dirname $0)/install.sh -n NAME -r REPO -t TOKEN
 EOF
 }
 
 function parse_cmd_args() {
-    args=$(getopt --options d:n:g:p:r:t:w:sh \
-                  --longoptions directory:,name:,group:,project:,repository:,token:,working-directory:,service,help -- "$@")
+    args=$(getopt --options d:n:g:r:t:w:sh \
+                  --longoptions directory:,name:,group:,repository:,token:,working-directory:,service,help -- "$@")
     
     if [[ $? -ne 0 ]]; then
         echo "Failed to parse arguments!" && usage
@@ -50,7 +49,6 @@ function parse_cmd_args() {
             -d | --directory) directory="$(eval echo $2)" ; shift 1 ;;
             -n | --name) name="$(eval echo $2)" ; shift 1 ;;
             -g | --group) group="$(eval echo $2)" ; shift 1 ;;
-            -p | --project) project="$(eval echo $2)" ; shift 1 ;;
             -w | --working-directory) working_directory="$(eval echo $2)" ; shift 1 ;;
             -r | --repository) repository="$(eval echo $2)" ; shift 1 ;;
             -s | --service) enable_service=true ;;
@@ -176,11 +174,6 @@ EOF
         exit 1
     fi
 
-    if [[ "${project}" == "" ]] ; then
-        echo "Please, define a project via --project PROJECT"
-        exit 1
-    fi
-
     runner_directory=${directory}/${name}
     if ! [ -d ${runner_directory} ] ; then
         mkdir -p ${runner_directory}
@@ -207,8 +200,8 @@ EOF
         log DEBUG "Removed ${file_path}"
         cd ${runner_directory}
         ./config.sh --unattended --url ${repository} --token ${token} \
-                    --agent ${name} --auth PAT --replace --deploymentgroup --deploymentgroupname ${group} \
-                    --work ${working_directory} --acceptTeeEula --projectname ${project}
+                    --agent ${name} --auth PAT --replace --pool ${group} \
+                    --work ${working_directory} --acceptTeeEula
         escaped_name=$(echo "${name}" | sed 's#\/#\\/#g')
         escaped_runner_directory=$(echo "${runner_directory}" | sed 's#\/#\\/#g')
         #if [ ${enable_service} == "true" ] && [ -d /etc/systemd/system ] ; then
