@@ -16,12 +16,13 @@ enable_service=false
 ##
 function usage(){
     cat <<EOF
-This script installs a github action runner.
+This script installs a azure pipelines agent.
   
 Options:
   -d, --directory            Defines the install directory of a github action runner. Default value is ${HOME}/runners.
   -n, --name                 Defines name of a runner.
   -g, --group                Defines group of a runner.
+  -g, --project              Defines project of a runner.
   -w, --working-directory    Defines working directory of a runner.
   -r, --repository           Defines url of a repository.
   -t, --token                Defines registration token for repository.
@@ -29,7 +30,7 @@ Options:
   -h, --help                 Shows this message.
   
 Examples:
-  $(dirname $0)/install.sh --name NAME --group GROUP --repository REPO --token TOKEN
+  $(dirname $0)/install.sh --name NAME --group GROUP --project PROJECT --repository REPO --token TOKEN
   $(dirname $0)/install.sh -n NAME -r REPO -t TOKEN
 EOF
 }
